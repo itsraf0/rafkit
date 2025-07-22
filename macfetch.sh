@@ -105,14 +105,13 @@ main() {
   printf "${CYAN}🧠 cpu        ${NC}${BLUE} -> ${GREEN}%s${NC}\n"   "$(get_cpu)"
   printf "${CYAN}🐏 ram        ${NC}${BLUE} -> ${GREEN}%s${NC}\n"   "$(get_memory)"
 
-  # ——— Uptime with conditional coloring ———
   local up_str=$(get_uptime)
   local days=0
-  # if the text contains "day", the first word is the number of days
+
   if [[ "$up_str" == *day* ]]; then
     days=$(echo "$up_str" | awk '{print $1}')
   fi
-  # choose color: >7 days = red, >3 days = yellow, else green
+
   local color
   if [ "$days" -ge 7 ]; then
     color=$RED
