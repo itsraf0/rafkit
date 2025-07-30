@@ -50,7 +50,7 @@ SOURCE_DIRS=(
 # Target directories
 MEDIA_DIR="$HOME/Media"
 ARCHIVE_DIR="$HOME/Archive"
-DOCS_DIR="$HOME/Docs"
+DOCS_DIR="$HOME/Documents"
 THREED_DIR="$HOME/3D"
 
 # Patterns to ignore (supports wildcards)
