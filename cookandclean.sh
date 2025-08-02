@@ -1,66 +1,94 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 1. Homebrew update & cleanup
-echo "🛠  Updating Homebrew..."
+# ─── Helper Functions ──────────────────────────────────────────────────────────
+
+info()  { printf "\033[1;34m[INFO]\033[0m %s\n" "$*"; }
+warn()  { printf "\033[1;33m[WARN]\033[0m %s\n" "$*"; }
+error() { printf "\033[1;31m[ERROR]\033[0m %s\n" "$*" >&2; exit 1; }
+
+# ─── 1. Update Homebrew and formulae ────────────────────────────────────────────
+
+info "Updating Homebrew..."
 brew update
+
+info "Upgrading installed formulae and casks..."
 brew upgrade
 brew upgrade --cask
-brew cleanup
-brew link --overwrite node
 
-# 2. NPM global packages
-if command -v npm >/dev/null 2>&1; then
-  echo "📦  Updating npm global packages..."
+# ─── 2. Update other package managers ───────────────────────────────────────────
+
+# npm (global)
+if command -v npm &>/dev/null; then
+  info "Updating npm globals..."
   npm update -g
-  npm cache clean --force
+else
+  warn "npm not found; skipping npm update"
 fi
 
-# 3. Yarn global packages
-if command -v yarn >/dev/null 2>&1; then
-  echo "📦  Updating Yarn global packages..."
-  yarn global upgrade
-  yarn cache clean
-fi
-
-# 4. PNPM global packages
-if command -v pnpm >/dev/null 2>&1; then
-  echo "📦  Updating PNPM global packages..."
+# pnpm
+if command -v pnpm &>/dev/null; then
+  info "Updating pnpm globals..."
   pnpm update -g
-  pnpm store prune
+else
+  warn "pnpm not found; skipping pnpm update"
 fi
 
-# 5. Pipx packages
-if command -v pipx >/dev/null 2>&1; then
-  echo "🐍  Upgrading pipx packages..."
+# yarn
+if command -v yarn &>/dev/null; then
+  info "Updating yarn globals..."
+  yarn global upgrade
+else
+  warn "yarn not found; skipping yarn update"
+fi
+
+# pipx
+if command -v pipx &>/dev/null; then
+  info "Upgrading all pipx packages..."
   pipx upgrade-all
+else
+  warn "pipx not found; skipping pipx upgrade"
 fi
 
-# 6. General macOS clean-up
-echo "🧹  Cleaning macOS caches..."
-rm -rf ~/Library/Caches/*
-echo "🗑  Emptying Trash..."
+# ─── 3. Clean up caches and old files ───────────────────────────────────────────
+
+info "Cleaning up Homebrew cache and old versions..."
+brew cleanup
+
+info "Cleaning pnpm store..."
+pnpm store prune || warn "pnpm store prune failed"
+
+info "Cleaning yarn cache..."
+yarn cache clean || warn "yarn cache clean failed"
+
+# Optionally empty the Trash:
+info "Emptying macOS Trash..."
 rm -rf ~/.Trash/*
 
-# 7. Run macfetch
-echo "⚙️   Running macfetch.sh"
-if [[ -x ~/dev/rafkit/macfetch.sh ]]; then
-  ~/dev/rafkit/macfetch.sh
+# ─── 4. Run your custom fetch script ───────────────────────────────────────────
+
+FETCH_SCRIPT=~/dev/rafkit/macfetch.sh
+if [[ -x "$FETCH_SCRIPT" ]]; then
+  info "Running macfetch.sh..."
+  "$FETCH_SCRIPT"
 else
-  echo "⚠️  Warning: ~/dev/rafkit/macfetch.sh not found or not executable"
+  warn "macfetch.sh not found or not executable at $FETCH_SCRIPT"
 fi
 
-# 8. Prompt to run sort-files
-read -rp "❓  Would you like to run sort-files.sh -v? [y/N] " run_sort
-if [[ "$run_sort" =~ ^[Yy]$ ]]; then
-  if [[ -x ~/dev/rafkit/sort-files.sh ]]; then
-    echo "🚚  Running sort-files.sh -v"
-    ~/dev/rafkit/sort-files.sh -v
+# ─── 5. Prompt to sort files ───────────────────────────────────────────────────
+
+SORT_SCRIPT=~/dev/rafkit/sort-files.sh
+echo
+read -rp "Would you like to run sort-files.sh with verbose output? [y/N] " REPLY
+if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+  if [[ -x "$SORT_SCRIPT" ]]; then
+    info "Running sort-files.sh -v..."
+    "$SORT_SCRIPT" -v
   else
-    echo "⚠️  Warning: ~/dev/rafkit/sort-files.sh not found or not executable"
+    error "sort-files.sh not found or not executable at $SORT_SCRIPT"
   fi
 else
-  echo "⏭  Skipping sort-files."
+  info "Skipping sort-files.sh."
 fi
 
-echo "✅  All done!"
+info "All done! 🎉"
