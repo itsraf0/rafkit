@@ -69,7 +69,7 @@ rm -rf ~/.Trash/*
 
 FETCH_SCRIPT=~/dev/rafkit/macfetch.sh
 if [[ -x "$FETCH_SCRIPT" ]]; then
-  info "Running macfetch.sh..."
+  info "Running sysfetch.sh..."
   "$FETCH_SCRIPT"
 else
   warn "macfetch.sh not found or not executable at $FETCH_SCRIPT"
