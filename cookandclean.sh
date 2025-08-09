@@ -79,7 +79,7 @@ fi
 
 SORT_SCRIPT=~/dev/rafkit/sort-files.sh
 echo
-read -rp "Would you like to run sort-files.sh with verbose output? [y/N] " REPLY
+read -rp "Would you like to run sort-files.sh? [y/n]" REPLY
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
   if [[ -x "$SORT_SCRIPT" ]]; then
     info "Running sort-files.sh -v..."
