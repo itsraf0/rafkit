@@ -153,7 +153,7 @@ fi
 
 # ─── 5. Run your custom fetch script ──────────────────────────────────────────
 
-FETCH_SCRIPT=~/dev/rafkit/sysfetch.sh
+FETCH_SCRIPT=~/rafkit/sysfetch.sh
 if [[ -x "$FETCH_SCRIPT" ]]; then
   info "Running sysfetch.sh..."
   "$FETCH_SCRIPT"
@@ -163,7 +163,7 @@ fi
 
 # ─── 6. Prompt to sort files ──────────────────────────────────────────────────
 
-SORT_SCRIPT=~/dev/rafkit/sort-files.sh
+SORT_SCRIPT=~/rafkit/sort-files.sh
 echo
 read -rp "Would you like to run sort-files.sh? [y/n] " REPLY
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
